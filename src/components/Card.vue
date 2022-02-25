@@ -1,0 +1,52 @@
+<template>
+  <div class="card">
+    <div class="card-infos">
+      <p class="card-author">{{ author }}</p>
+      <p class="card-date">{{ date }}</p>
+    </div>
+    <p class="card-message">
+      {{ message }}
+    </p>
+    <img
+      v-if="image_url"
+      :src="image_url"
+      alt="Pas d'alt, fallait pas être aveugle"
+    />
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Card",
+  props: {
+    author: {
+      type: String,
+    },
+    date: {
+      type: Date,
+    },
+    message: {
+      type: String,
+    },
+    image_url: {
+      type: String,
+    },
+  },
+  created() {},
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.card {
+  background-color: red;
+  display: flex;
+  flex-direction: column;
+  width: 15%;
+  min-width: 300px;
+}
+.card-infos {
+  display: flex;
+  justify-content: space-between;
+}
+</style>
