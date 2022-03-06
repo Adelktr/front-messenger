@@ -1,28 +1,51 @@
 <template>
   <div id="app">
-    <div :key="index" v-for="(message, index) in messagesArray">
+    <div
+      class="single-container"
+      :key="index"
+      v-for="(message, index) in messagesArray"
+    >
       <Card
         :author="message.autor"
         :date="message.date"
         :message="message.message"
         :image_url="message.urlImage"
+        @clickDelete="deleteMessage(message)"
+        @clickModify="modifyMessage(message)"
       />
     </div>
     <form action="POST">
       <label class="formTitle">Add a message</label>
       <div>
         <label>Author<span>*</span></label>
-        <input ref="input1" name="author" type="text" required />
+        <input
+          :value="messageAuthor != '' ? messageAuthor : ''"
+          ref="input1"
+          name="author"
+          type="text"
+          required
+        />
       </div>
       <div>
         <label>Message<span>*</span></label>
-        <textarea ref="input2" name="message" type="text" required />
+        <textarea
+          :value="messageContent != '' ? messageContent : ''"
+          ref="input2"
+          name="message"
+          type="text"
+          required
+        />
       </div>
       <div>
         <label>Image url</label>
-        <input ref="input3" name="urlImage" type="text" />
+        <input
+          :value="messageImg != '' ? messageImg : ''"
+          ref="input3"
+          name="urlImage"
+          type="text"
+        />
       </div>
-      <input @click="getFormValues()" type="submit" value="Send" />
+      <input @click.prevent="getFormValues()" type="submit" value="Send" />
     </form>
   </div>
 </template>
@@ -41,6 +64,10 @@ export default {
       author: String,
       message: String,
       urlImage: String,
+      messageAuthor: "",
+      messageContent: "",
+      messageImg: "",
+      messageId: "",
     };
   },
   methods: {
@@ -68,7 +95,11 @@ export default {
       this.author = this.$refs.input1.value;
       this.message = this.$refs.input2.value;
       this.urlImage = this.$refs.input3.value;
-      this.postMessage();
+      if (this.messageAuthor != "") {
+        this.updateMessage();
+      } else {
+        this.postMessage();
+      }
     },
     postMessage() {
       var myHeaders = new Headers();
@@ -91,13 +122,75 @@ export default {
         headers: myHeaders,
         body: raw,
         redirect: "follow",
+        followAllRedirects: true,
       };
 
       fetch("http://localhost:3000/message", requestOptions)
         .then((response) => response.json())
         .then((data) => {
           this.messagesArray = data;
+          location.reload();
         });
+    },
+    deleteMessage(message) {
+      var myHeaders = new Headers();
+      myHeaders.append("userid", localStorage.getItem("userId"));
+      myHeaders.append(
+        "Authorization",
+        "Bearer " + localStorage.getItem("token")
+      );
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        msgId: message._id,
+      });
+
+      var requestOptions = {
+        method: "DELETE",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      fetch("http://localhost:3000/message/delete", requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .then(location.reload())
+        .catch((error) => console.log("error", error));
+    },
+    modifyMessage(message) {
+      console.log(message);
+      this.messageAuthor = message.autor;
+      this.messageContent = message.message;
+      this.messageId = message._id;
+      if (message.urlImage) {
+        this.messageImg = message.urlImage;
+      }
+    },
+    updateMessage() {
+      console.log("modification");
+      var myHeaders = new Headers();
+      myHeaders.append("userid", localStorage.getItem("userId"));
+      myHeaders.append(
+        "Authorization",
+        "Bearer " + localStorage.getItem("token")
+      );
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+        msgId: this.messageId,
+        message: this.message,
+        urlImage: this.messageImg,
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+      fetch("http://localhost:3000/message/modify", requestOptions).then(
+        location.reload()
+      );
     },
   },
   created() {
@@ -140,5 +233,10 @@ span {
 }
 .formTitle {
   font-size: 28px;
+}
+.single-container {
+  max-width: 500px;
+  display: flex;
+  justify-content: center;
 }
 </style>
