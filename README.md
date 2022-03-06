@@ -1,5 +1,7 @@
 # front-end
 
+### Group: VOISIN Elyes, KHITER Adel, PALVADEAU Florian, PERRENOT Louis
+
 ## Project setup
 ```
 npm install
