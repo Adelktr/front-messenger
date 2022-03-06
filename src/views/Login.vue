@@ -52,6 +52,7 @@ export default {
       //     console.log(data);
       //   })
       //   .catch((error) => console.log("error", error));
+
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 

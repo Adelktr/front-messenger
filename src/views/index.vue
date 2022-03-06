@@ -45,34 +45,6 @@ export default {
   },
   methods: {
     fetchUrl() {
-      // console.log("Fetching...");
-      // console.log(
-      //   localStorage.getItem("userId"),
-      //   localStorage.getItem("token")
-      // );
-      // var myHeaders = new Headers();
-      // myHeaders.append(
-      //   "Authorization",
-      //   "Bearer " + localStorage.getItem("token")
-      // );
-      // myHeaders.append("Content-Type", "application/json");
-
-      // var raw = JSON.stringify({
-      //   userId: localStorage.getItem("userId"),
-      // });
-
-      // var requestOptions = {
-      //   method: "GET",
-      //   headers: myHeaders,
-      //   body: raw,
-      //   redirect: "follow",
-      // };
-
-      // fetch("http://localhost:3000/message", requestOptions)
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     this.messagesArray = data;
-      //   });
       var myHeaders = new Headers();
       myHeaders.append("userid", localStorage.getItem("userId"));
       myHeaders.append(
@@ -99,20 +71,28 @@ export default {
       this.postMessage();
     },
     postMessage() {
-      let headers = new Headers();
-      headers.append("Content-Type", "application/json");
-      let raw = JSON.stringify({
+      var myHeaders = new Headers();
+      myHeaders.append("userid", localStorage.getItem("userId"));
+      myHeaders.append(
+        "Authorization",
+        "Bearer " + localStorage.getItem("token")
+      );
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
         autor: this.author,
         message: this.message,
         date: new Date(),
         urlImage: this.urlImage,
       });
-      let requestOptions = {
+
+      var requestOptions = {
         method: "POST",
-        headers: headers,
+        headers: myHeaders,
         body: raw,
         redirect: "follow",
       };
+
       fetch("http://localhost:3000/message", requestOptions)
         .then((response) => response.json())
         .then((data) => {
@@ -139,6 +119,8 @@ export default {
   align-items: center;
 }
 form {
+  position: fixed;
+  left: 50px;
   display: flex;
   flex-direction: column;
   margin-top: 50px;
